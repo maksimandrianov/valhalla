@@ -18,6 +18,7 @@ protected:
     constexpr double grid_size_meters = 100.;
 
     const std::string ascii_map = R"(
+
    E----F----G----H----I----A----J----K----L
                                  |    |
                                  |    |
@@ -104,9 +105,9 @@ TEST_F(UseUnpavedRoadsTest, UnpavedRoadsInTheBeginning) {
 
   // Do not use unpaved roads
   for (const auto& costing : kSupportedCostingModels) {
-    EXPECT_THROW(gurka::do_action(valhalla::Options::route, map, {"E", "H"}, costing,
-                                  {{"/costing_options/" + costing + "/use_unpaved_roads", "0"}}),
-                 valhalla_exception_t);
+    auto result = gurka::do_action(valhalla::Options::route, map, {"E", "H"}, costing,
+                                   {{"/costing_options/" + costing + "/use_unpaved_roads", "0"}});
+    gurka::assert::raw::expect_path(result, {"EF", "FG", "GH"});
   }
 }
 
@@ -126,8 +127,8 @@ TEST_F(UseUnpavedRoadsTest, UnpavedRoadsInTheEnd) {
 
   // Do not use unpaved roads
   for (const auto& costing : kSupportedCostingModels) {
-    EXPECT_THROW(gurka::do_action(valhalla::Options::route, map, {"G", "A"}, costing,
-                                  {{"/costing_options/" + costing + "/use_unpaved_roads", "0"}}),
-                 valhalla_exception_t);
+    auto result = gurka::do_action(valhalla::Options::route, map, {"G", "A"}, costing,
+                                   {{"/costing_options/" + costing + "/use_unpaved_roads", "0"}});
+    gurka::assert::raw::expect_path(result, {"GH", "HI", "IA"});
   }
 }
